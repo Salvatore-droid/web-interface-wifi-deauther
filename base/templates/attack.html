@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate__animated animate__fadeIn">
+    <div class="mb-8">
+        <h2 class="text-3xl glow-text mb-2">Deauthentication Attack</h2>
+        <div class="flex items-center text-yellow-400">
+            <div class="w-3 h-3 bg-yellow-400 rounded-full mr-2 animate-pulse"></div>
+            <span>LIVE ATTACK IN PROGRESS</span>
+        </div>
+    </div>
+
+    <!-- Attack visualization -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <!-- Target info -->
+        <div class="bg-gray-900 p-6 rounded-lg border border-red-500">
+            <h3 class="text-xl mb-4">Target</h3>
+            <div class="space-y-2">
+                <p><span class="text-gray-400">BSSID:</span> <span class="text-red-400">{{ target }}</span></p>
+                <p><span class="text-gray-400">Channel:</span> {{ channel }}</p>
+                <p><span class="text-gray-400">Packets Sent:</span> <span id="packet-count">0</span></p>
+            </div>
+        </div>
+
+        <!-- Signal strength meter -->
+        <div class="bg-gray-900 p-6 rounded-lg">
+            <h3 class="text-xl mb-4">Signal Strength</h3>
+            <div class="h-4 bg-gray-800 rounded-full mb-2">
+                <div class="h-full bg-gradient-to-r from-green-400 to-red-600 rounded-full" 
+                     style="width: 75%" id="signal-bar"></div>
+            </div>
+            <p class="text-right text-sm text-gray-400">-65 dBm</p>
+        </div>
+
+        <!-- Attack controls -->
+        <div class="bg-gray-900 p-6 rounded-lg">
+            <h3 class="text-xl mb-4">Controls</h3>
+            <div class="flex space-x-4">
+                <button class="cyber-btn px-4 py-2 rounded-md font-bold text-black flex-1">
+                    ⏸ Pause
+                </button>
+                <button class="px-4 py-2 rounded-md font-bold bg-gray-800 text-red-400 border border-red-400 flex-1">
+                    ■ Stop
+                </button>
+            </div>
+            <div class="mt-4">
+                <label class="block text-gray-400 mb-2">Deauth Intensity</label>
+                <input type="range" min="1" max="100" value="50" 
+                       class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-time log -->
+    <div class="terminal p-4 h-64 overflow-y-auto">
+        <pre class="text-green-300 font-mono text-sm" id="attack-log">
+[12:34:56] Starting attack on {{ target }}
+[12:34:57] Sending 64 deauth packets...
+[12:35:02] Target is responding (75% signal)
+[12:35:05] 128 packets sent
+        </pre>
+    </div>
+</div>
+
+<script>
+    // Simulate packet count increase
+    let count = 0;
+    setInterval(() => {
+        count += Math.floor(Math.random() * 5);
+        document.getElementById('packet-count').textContent = count;
+        
+        // Add to log
+        const log = document.getElementById('attack-log');
+        log.innerHTML += `[${new Date().toLocaleTimeString()}] Packet burst sent (${count} total)\n`;
+        log.scrollTop = log.scrollHeight;
+    }, 1000);
+
+    // Animate signal bar
+    const bar = document.getElementById('signal-bar');
+    setInterval(() => {
+        const randomWidth = 60 + Math.random() * 30;
+        bar.style.width = `${randomWidth}%`;
+    }, 800);
+</script>
+{% endblock %}

@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate__animated animate__fadeIn">
+    <!-- Profile Header with Cyberpunk Styling -->
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-12 border-b border-gray-800 pb-8">
+        <div class="flex items-center space-x-6 mb-6 md:mb-0">
+            <!-- Avatar with glowing effect -->
+            <div class="relative">
+                <div class="w-24 h-24 rounded-full bg-green-900 flex items-center justify-center border-2 border-green-400">
+                    <span class="text-3xl text-green-400 font-bold">root</span>
+                </div>
+                <div class="absolute -inset-2 rounded-full border-2 border-green-400 opacity-0 hover:opacity-100 animate-pulse transition-opacity duration-300"></div>
+            </div>
+            
+            <!-- User Info -->
+            <div>
+                <h1 class="text-3xl font-bold glow-text">ADMINISTRATOR</h1>
+                <p class="text-gray-400">@root_access</p>
+                <div class="flex items-center mt-2">
+                    <span class="h-2 w-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                    <span class="text-xs text-green-400">PRIVILEGED SESSION</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Security Badge -->
+        <div class="bg-black bg-opacity-50 border border-gray-800 rounded-lg p-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-green-900 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-300">SECURITY STATUS</h3>
+                    <p class="text-green-400 text-sm">ENCRYPTED SESSION</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column - User Details -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Personal Information Card -->
+            <div class="terminal rounded-lg p-6">
+                <div class="flex items-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <h2 class="text-xl font-bold">USER CONFIGURATION</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-400 text-sm mb-1">CALLSIGN</label>
+                        <div class="bg-gray-800 border border-gray-700 rounded px-4 py-2 text-gray-300">NEO</div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm mb-1">CLEARANCE LEVEL</label>
+                        <div class="bg-gray-800 border border-gray-700 rounded px-4 py-2 text-gray-300">LEVEL 10</div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm mb-1">OPERATOR SINCE</label>
+                        <div class="bg-gray-800 border border-gray-700 rounded px-4 py-2 text-gray-300">2022-06-15</div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm mb-1">LAST ACTIVE</label>
+                        <div class="bg-gray-800 border border-gray-700 rounded px-4 py-2 text-gray-300">2023-11-28 14:36:22 UTC</div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-400 text-sm mb-1">OPERATIONAL NOTES</label>
+                        <textarea class="w-full bg-gray-800 border border-gray-700 rounded px-4 py-2 text-gray-300 h-24" placeholder="Enter mission notes...">PRIMARY OPERATOR FOR EASTERN SECTOR. SPECIALIZES IN WIFI PENETRATION AND SIGNAL ANALYSIS.</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Settings Card -->
+            <div class="terminal rounded-lg p-6">
+                <div class="flex items-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <h2 class="text-xl font-bold">SECURITY PROTOCOLS</h2>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-4 bg-gray-800 rounded border border-gray-700">
+                        <div>
+                            <h3 class="font-bold text-gray-300">TWO-FACTOR AUTHENTICATION</h3>
+                            <p class="text-sm text-gray-400">Google Authenticator</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex justify-between items-center p-4 bg-gray-800 rounded border border-gray-700">
+                        <div>
+                            <h3 class="font-bold text-gray-300">SESSION ENCRYPTION</h3>
+                            <p class="text-sm text-gray-400">AES-256</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-900 text-green-400">ACTIVE</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center p-4 bg-gray-800 rounded border border-gray-700">
+                        <div>
+                            <h3 class="font-bold text-gray-300">LAST PASSWORD ROTATION</h3>
+                            <p class="text-sm text-gray-400">14 days ago</p>
+                        </div>
+                        <button class="px-4 py-2 rounded-md font-bold text-xs bg-gray-700 text-blue-400 hover:bg-gray-600 transition-colors">
+                            ROTATE NOW
+                        </button>
+                    </div>
+                    
+                    <div class="p-4 bg-gray-800 rounded border border-red-900">
+                        <div class="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-bold text-red-400">DANGER ZONE</h3>
+                                <p class="text-sm text-gray-400">These actions are irreversible. Proceed with caution.</p>
+                                <div class="flex space-x-3 mt-3">
+                                    <button class="px-4 py-2 rounded-md font-bold text-xs bg-red-900 text-red-400 hover:bg-red-800 transition-colors">
+                                        DEACTIVATE ACCOUNT
+                                    </button>
+                                    <button class="px-4 py-2 rounded-md font-bold text-xs bg-black text-red-400 border border-red-900 hover:bg-red-900 transition-colors">
+                                        DELETE ALL DATA
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column - Stats and Activity -->
+        <div class="space-y-8">
+            <!-- Stats Card -->
+            <div class="terminal rounded-lg p-6">
+                <div class="flex items-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <h2 class="text-xl font-bold">OPERATIONAL STATS</h2>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">MISSIONS COMPLETED</span>
+                        <span class="font-bold text-green-400">127</span>
+                    </div>
+                    <div class="w-full bg-gray-800 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-6">
+                        <span class="text-gray-400">SUCCESS RATE</span>
+                        <span class="font-bold text-green-400">92.3%</span>
+                    </div>
+                    <div class="w-full bg-gray-800 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: 92.3%"></div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-6">
+                        <span class="text-gray-400">TARGETS ANALYZED</span>
+                        <span class="font-bold text-green-400">843</span>
+                    </div>
+                    <div class="w-full bg-gray-800 rounded-full h-2">
+                        <div class="bg-purple-500 h-2 rounded-full" style="width: 72%"></div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-6">
+                        <span class="text-gray-400">SYSTEM UPTIME</span>
+                        <span class="font-bold text-green-400">99.98%</span>
+                    </div>
+                    <div class="w-full bg-gray-800 rounded-full h-2">
+                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 99.98%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="terminal rounded-lg p-6">
+                <div class="flex items-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <h2 class="text-xl font-bold">RECENT ACTIVITY</h2>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="h-2 w-2 bg-green-400 rounded-full mt-2 mr-3"></div>
+                        <div>
+                            <p class="text-sm text-gray-300">Initiated deauth attack on TARGET-ALPHA</p>
+                            <p class="text-xs text-gray-500">2023-11-28 14:36:22 UTC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="h-2 w-2 bg-blue-400 rounded-full mt-2 mr-3"></div>
+                        <div>
+                            <p class="text-sm text-gray-300">Completed network scan in sector 7-G</p>
+                            <p class="text-xs text-gray-500">2023-11-28 12:15:08 UTC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="h-2 w-2 bg-yellow-400 rounded-full mt-2 mr-3"></div>
+                        <div>
+                            <p class="text-sm text-gray-300">Updated security credentials</p>
+                            <p class="text-xs text-gray-500">2023-11-27 09:42:51 UTC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="h-2 w-2 bg-purple-400 rounded-full mt-2 mr-3"></div>
+                        <div>
+                            <p class="text-sm text-gray-300">Analyzed packet capture from TARGET-BRAVO</p>
+                            <p class="text-xs text-gray-500">2023-11-26 22:18:37 UTC</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="h-2 w-2 bg-red-400 rounded-full mt-2 mr-3"></div>
+                        <div>
+                            <p class="text-sm text-gray-300">System alert: Unauthorized access attempt blocked</p>
+                            <p class="text-xs text-gray-500">2023-11-25 16:29:14 UTC</p>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-4 px-4 py-2 rounded-md font-bold text-xs bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 hover:text-green-400 transition-colors">
+                        VIEW FULL ACTIVITY LOG
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="terminal rounded-lg p-6">
+                <div class="flex items-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <h2 class="text-xl font-bold">QUICK ACTIONS</h2>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <button class="px-3 py-2 rounded-md font-bold text-xs bg-gray-800 text-green-400 border border-green-900 hover:bg-green-900 transition-colors">
+                        NEW SCAN
+                    </button>
+                    <button class="px-3 py-2 rounded-md font-bold text-xs bg-gray-800 text-blue-400 border border-blue-900 hover:bg-blue-900 transition-colors">
+                        EXPORT LOGS
+                    </button>
+                    <button class="px-3 py-2 rounded-md font-bold text-xs bg-gray-800 text-purple-400 border border-purple-900 hover:bg-purple-900 transition-colors">
+                        ANALYZE DATA
+                    </button>
+                    <button class="px-3 py-2 rounded-md font-bold text-xs bg-gray-800 text-yellow-400 border border-yellow-900 hover:bg-yellow-900 transition-colors">
+                        SYSTEM CHECK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

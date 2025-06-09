@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate__animated animate__fadeIn">
+    <!-- Header with cyberpunk styling -->
+    <div class="text-center mb-12">
+        <h1 class="text-5xl font-bold glow-text mb-4">RB-DEAUTHER</h1>
+        <p class="text-xl text-gray-400">Wi-Fi Penetration Toolkit</p>
+    </div>
+
+    <!-- Interactive terminal UI -->
+    <div class="terminal rounded-lg p-6 mb-12 animate__animated animate__pulse">
+        <div class="flex items-center mb-4">
+            <div class="h-3 w-3 bg-red-500 rounded-full mr-2"></div>
+            <div class="h-3 w-3 bg-yellow-500 rounded-full mr-2"></div>
+            <div class="h-3 w-3 bg-green-500 rounded-full mr-2"></div>
+            <span class="text-gray-400 ml-auto">root@kali:~</span>
+        </div>
+        <div class="mb-2">
+            <span class="text-green-400">$</span> 
+            <span class="text-gray-300">sudo ./init_attack_sequence</span>
+        </div>
+        <div class="text-gray-400">
+            [✓] Loaded cyber modules<br>
+            [✓] Established secure tunnel<br>
+            [✓] Awaiting commands...
+        </div>
+    </div>
+
+    <!-- Action cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Scanner Card -->
+        <div class="bg-gray-900 rounded-lg p-6 border border-gray-800 hover:border-green-400 transition-all">
+            <h3 class="text-xl font-bold mb-4">Network Scanner</h3>
+            <p class="text-gray-400 mb-4">Discover nearby Wi-Fi networks</p>
+            <a href="{% url 'scan_networks' %}" 
+               class="cyber-btn px-4 py-2 rounded-md font-bold text-black">
+               Launch Scanner
+            </a>
+        </div>
+
+        <!-- Attack Card -->
+        <div class="bg-gray-900 rounded-lg p-6 border border-gray-800 hover:border-red-400 transition-all">
+            <h3 class="text-xl font-bold mb-4">Deauth Attack</h3>
+            <p class="text-gray-400 mb-4">Disrupt target networks</p>
+            <a href="{% url 'start_attack' %}" 
+               class="cyber-btn px-4 py-2 rounded-md font-bold text-black bg-gradient-to-r from-red-400 to-pink-600">
+               Initiate Attack
+            </a>
+        </div>
+
+        <!-- Logs Card -->
+        <div class="bg-gray-900 rounded-lg p-6 border border-gray-800 hover:border-blue-400 transition-all">
+            <h3 class="text-xl font-bold mb-4">Attack Logs</h3>
+            <p class="text-gray-400 mb-4">View historical operations</p>
+            <button class="px-4 py-2 rounded-md font-bold bg-gray-800 text-blue-400 border border-blue-400">
+                Access Logs
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

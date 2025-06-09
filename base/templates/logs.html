@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate__animated animate__fadeIn">
+    <!-- Logs Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-gray-800 pb-6">
+        <div>
+            <h1 class="text-3xl font-bold glow-text mb-2">OPERATION LOGS</h1>
+            <p class="text-gray-400">Historical record of all cyber operations</p>
+        </div>
+        
+        <div class="flex space-x-3 mt-4 md:mt-0">
+            <button onclick="refreshLogs()" class="cyber-btn px-4 py-2 rounded-md font-bold text-black flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                REFRESH
+            </button>
+            <button onclick="exportLogs()" class="px-4 py-2 rounded-md font-bold bg-gray-800 text-blue-400 border border-blue-400 hover:bg-blue-900 transition-colors flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                EXPORT
+            </button>
+            <button onclick="clearLogs()" class="px-4 py-2 rounded-md font-bold bg-gray-800 text-red-400 border border-red-400 hover:bg-red-900 transition-colors flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                CLEAR
+            </button>
+        </div>
+    </div>
+
+    <!-- Log Filter Controls -->
+    <div class="terminal rounded-lg p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-gray-400 text-sm mb-1">DATE RANGE</label>
+                <select class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-300">
+                    <option>Last 24 hours</option>
+                    <option>Last 7 days</option>
+                    <option>Last 30 days</option>
+                    <option>All time</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-400 text-sm mb-1">LOG TYPE</label>
+                <select class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-300">
+                    <option>All events</option>
+                    <option>Scans only</option>
+                    <option>Attacks only</option>
+                    <option>System events</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-400 text-sm mb-1">SEVERITY</label>
+                <select class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-300">
+                    <option>All levels</option>
+                    <option>Critical</option>
+                    <option>Warning</option>
+                    <option>Information</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button class="cyber-btn px-4 py-2 rounded-md font-bold text-black w-full">
+                    APPLY FILTERS
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Table -->
+    <div class="terminal rounded-lg overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-800">
+                <thead class="bg-gray-900">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-green-400 uppercase tracking-wider">TIMESTAMP</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-green-400 uppercase tracking-wider">EVENT TYPE</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-green-400 uppercase tracking-wider">TARGET</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-green-400 uppercase tracking-wider">DETAILS</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-green-400 uppercase tracking-wider">STATUS</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-gray-900 divide-y divide-gray-800">
+                    {% for log in logs %}
+                    <tr class="hover:bg-gray-800 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">{{ log|slice:":19" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if "scan" in log|lower %}
+                                <span class="px-2 py-1 text-xs rounded-full bg-blue-900 text-blue-300">SCAN</span>
+                            {% elif "attack" in log|lower or "deauth" in log|lower %}
+                                <span class="px-2 py-1 text-xs rounded-full bg-red-900 text-red-300">ATTACK</span>
+                            {% elif "error" in log|lower or "fail" in log|lower %}
+                                <span class="px-2 py-1 text-xs rounded-full bg-yellow-900 text-yellow-300">ERROR</span>
+                            {% else %}
+                                <span class="px-2 py-1 text-xs rounded-full bg-gray-700 text-gray-300">SYSTEM</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">
+                            {% if "BSSID:" in log %}
+                                {{ log|split:"BSSID:"|last|split:" "|first|truncatechars:12 }}
+                            {% elif "ESSID:" in log %}
+                                {{ log|split:"ESSID:"|last|split:" "|first|truncatechars:12 }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-400 max-w-xs truncate">{{ log }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if "completed" in log|lower or "success" in log|lower %}
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-900 text-green-300">SUCCESS</span>
+                            {% elif "fail" in log|lower or "error" in log|lower %}
+                                <span class="px-2 py-1 text-xs rounded-full bg-red-900 text-red-300">FAILED</span>
+                            {% else %}
+                                <span class="px-2 py-1 text-xs rounded-full bg-gray-700 text-gray-300">UNKNOWN</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No log entries found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-between mt-6">
+        <div class="text-sm text-gray-400">
+            Showing <span class="font-bold">1</span> to <span class="font-bold">10</span> of <span class="font-bold">{{ logs|length }}</span> entries
+        </div>
+        <div class="flex space-x-2">
+            <button class="px-3 py-1 rounded-md bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 disabled:opacity-50" disabled>
+                Previous
+            </button>
+            <button class="px-3 py-1 rounded-md bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 hover:text-green-400">
+                1
+            </button>
+            <button class="px-3 py-1 rounded-md bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 hover:text-green-400">
+                2
+            </button>
+            <button class="px-3 py-1 rounded-md bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 hover:text-green-400">
+                3
+            </button>
+            <button class="px-3 py-1 rounded-md bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700">
+                Next
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Log Detail Modal -->
+<div id="logModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+    <div class="terminal rounded-lg p-6 w-full max-w-3xl">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">LOG DETAIL</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="mb-4">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-gray-400 text-sm mb-1">Timestamp</label>
+                    <div class="bg-gray-800 p-2 rounded text-gray-300 font-mono" id="modalTimestamp">2023-11-28 14:36:22</div>
+                </div>
+                <div>
+                    <label class="block text-gray-400 text-sm mb-1">Event Type</label>
+                    <div class="bg-gray-800 p-2 rounded">
+                        <span class="px-2 py-1 text-xs rounded-full bg-blue-900 text-blue-300" id="modalType">SCAN</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-400 text-sm mb-1">Full Log Entry</label>
+                <div class="bg-gray-800 p-4 rounded font-mono text-sm text-gray-300 overflow-x-auto" id="modalLog">
+                    [2023-11-28 14:36:22] SCAN: Initiated network scan on wlan0mon, found 12 networks
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button class="px-4 py-2 rounded-md font-bold text-xs bg-gray-800 text-blue-400 border border-blue-400 hover:bg-blue-900">
+                    COPY TO CLIPBOARD
+                </button>
+                <button class="px-4 py-2 rounded-md font-bold text-xs bg-gray-800 text-green-400 border border-green-400 hover:bg-green-900">
+                    CREATE ALERT
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to refresh logs
+    function refreshLogs() {
+        window.location.reload();
+    }
+
+    // Function to export logs
+    function exportLogs() {
+        // In a real implementation, this would call a Django view to export logs
+        alert('Export functionality would be implemented here');
+    }
+
+    // Function to clear logs
+    function clearLogs() {
+        if (confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
+            fetch('/clear-logs/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            }).then(response => {
+                if (response.ok) {
+                    refreshLogs();
+                }
+            });
+        }
+    }
+
+    // Function to show log details in modal
+    function showLogDetails(timestamp, type, log) {
+        document.getElementById('modalTimestamp').textContent = timestamp;
+        document.getElementById('modalType').textContent = type;
+        document.getElementById('modalType').className = getTypeBadgeClass(type);
+        document.getElementById('modalLog').textContent = log;
+        document.getElementById('logModal').classList.remove('hidden');
+    }
+
+    // Function to close modal
+    function closeModal() {
+        document.getElementById('logModal').classList.add('hidden');
+    }
+
+    // Helper function to get badge class based on log type
+    function getTypeBadgeClass(type) {
+        type = type.toLowerCase();
+        if (type.includes('scan')) return 'px-2 py-1 text-xs rounded-full bg-blue-900 text-blue-300';
+        if (type.includes('attack')) return 'px-2 py-1 text-xs rounded-full bg-red-900 text-red-300';
+        if (type.includes('error')) return 'px-2 py-1 text-xs rounded-full bg-yellow-900 text-yellow-300';
+        return 'px-2 py-1 text-xs rounded-full bg-gray-700 text-gray-300';
+    }
+
+    // Add click handlers to log rows
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('click', function() {
+                const cells = this.cells;
+                showLogDetails(
+                    cells[0].textContent.trim(),
+                    cells[1].textContent.trim(),
+                    cells[3].textContent.trim()
+                );
+            });
+        });
+    });
+</script>
+
+<style>
+    /* Additional styles for log table */
+    table {
+        min-width: 100%;
+    }
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+    }
+    tbody tr {
+        cursor: pointer;
+    }
+    tbody tr:hover {
+        background-color: rgba(0, 255, 65, 0.05);
+    }
+    .max-w-xs {
+        max-width: 300px;
+    }
+    #logModal {
+        backdrop-filter: blur(5px);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate__animated animate__fadeIn">
+    <!-- Scanner Header -->
+    <div class="flex items-center justify-between mb-8 border-b border-gray-800 pb-4">
+        <h2 class="text-3xl font-bold glow-text">NETWORK SCANNER</h2>
+        <div class="flex items-center space-x-2">
+            <div class="h-3 w-3 bg-green-500 rounded-full animate-pulse"></div>
+            <span class="text-gray-400">ACTIVE</span>
+        </div>
+    </div>
+
+    <!-- Scanner Interface -->
+    <div class="terminal rounded-lg p-6 mb-8">
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="py-2 px-4 mb-2 rounded {% if message.tags == 'error' %}bg-red-900 text-red-300{% else %}bg-green-900 text-green-300{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-6">
+                <label class="block text-gray-400 mb-2">DETECTED INTERFACE</label>
+                <input type="text" value="{{ interface|default:'wlan0' }}" 
+                       class="w-full bg-gray-900 border border-gray-700 p-3 text-green-400 font-mono" readonly>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-400 mb-2">SUDO PASSWORD</label>
+                <input type="password" name="password" 
+                       class="w-full bg-gray-900 border border-gray-700 p-3 text-green-400 font-mono focus:border-green-400 focus:outline-none" 
+                       required>
+                <p class="text-gray-600 mt-1 text-sm">Required for monitor mode</p>
+            </div>
+            
+            <button type="submit" 
+                    class="cyber-btn px-6 py-3 w-full font-bold tracking-wider hover:shadow-lg hover:shadow-green-400/20 transition-all">
+                INITIATE SCAN
+            </button>
+        </form>
+    </div>
+
+    <!-- Results Display -->
+    <div class="terminal rounded-lg p-6">
+        <div class="flex items-center mb-4">
+            <span class="text-green-400 mr-2">$</span>
+            <span class="text-gray-300">scan_results.log</span>
+        </div>
+        <div class="h-64 overflow-y-auto font-mono text-sm">
+            <!-- Scan results will appear here -->
+            {% if scan_results %}
+            <pre class="text-green-300">{{ scan_results }}</pre>
+            {% else %}
+            <p class="text-gray-600">[Awaiting scan initiation...]</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
