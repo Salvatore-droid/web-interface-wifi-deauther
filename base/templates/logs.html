@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 
+{% load custom_filters %}
+{{ log|split:"BSSID:"|last|split:" "|first|truncatechars:12 }}
+
 {% block content %}
 <div class="animate__animated animate__fadeIn">
     <!-- Logs Header -->

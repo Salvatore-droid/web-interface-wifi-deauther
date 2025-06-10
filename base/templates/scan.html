@@ -48,19 +48,42 @@
     </div>
 
     <!-- Results Display -->
+    <!-- Update results section to match view context -->
     <div class="terminal rounded-lg p-6">
         <div class="flex items-center mb-4">
             <span class="text-green-400 mr-2">$</span>
             <span class="text-gray-300">scan_results.log</span>
+            {% if count %}<span class="ml-auto text-gray-400">{{ count }} networks found</span>{% endif %}
         </div>
-        <div class="h-64 overflow-y-auto font-mono text-sm">
-            <!-- Scan results will appear here -->
-            {% if scan_results %}
-            <pre class="text-green-300">{{ scan_results }}</pre>
-            {% else %}
-            <p class="text-gray-600">[Awaiting scan initiation...]</p>
-            {% endif %}
+        
+        {% if networks %}
+        <div class="overflow-x-auto">
+            <table class="w-full font-mono text-sm">
+                <thead class="text-gray-400 border-b border-gray-700">
+                    <tr>
+                        <th class="p-2 text-left">BSSID</th>
+                        <th class="p-2 text-left">SSID</th>
+                        <th class="p-2 text-left">Channel</th>
+                        <th class="p-2 text-left">Signal</th>
+                        <th class="p-2 text-left">Encryption</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for network in networks %}
+                    <tr class="border-b border-gray-800 hover:bg-gray-900">
+                        <td class="p-2 text-green-400">{{ network.bssid }}</td>
+                        <td class="p-2">{{ network.essid|default:"Hidden" }}</td>
+                        <td class="p-2 text-center">{{ network.channel }}</td>
+                        <td class="p-2 text-center">{{ network.signal }}</td>
+                        <td class="p-2">{{ network.encryption }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+        {% else %}
+        <p class="text-gray-600">[No scan results available]</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

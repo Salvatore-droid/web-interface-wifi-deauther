@@ -39,7 +39,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Two Column Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Left Column - User Details -->
@@ -48,35 +48,47 @@
             <div class="terminal rounded-lg p-6">
                 <div class="flex items-center mb-6">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     <h2 class="text-xl font-bold">USER CONFIGURATION</h2>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-gray-400 text-sm mb-1">CALLSIGN</label>
-                        <div class="bg-gray-800 border border-gray-700 rounded px-4 py-2 text-gray-300">NEO</div>
+                {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                    <div class="py-2 px-4 mb-2 rounded {% if message.tags == 'error' %}bg-red-900 text-red-300{% else %}bg-green-900 text-green-300{% endif %}">
+                        {{ message }}
                     </div>
-                    <div>
-                        <label class="block text-gray-400 text-sm mb-1">CLEARANCE LEVEL</label>
-                        <div class="bg-gray-800 border border-gray-700 rounded px-4 py-2 text-gray-300">LEVEL 10</div>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 text-sm mb-1">OPERATOR SINCE</label>
-                        <div class="bg-gray-800 border border-gray-700 rounded px-4 py-2 text-gray-300">2022-06-15</div>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 text-sm mb-1">LAST ACTIVE</label>
-                        <div class="bg-gray-800 border border-gray-700 rounded px-4 py-2 text-gray-300">2023-11-28 14:36:22 UTC</div>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-gray-400 text-sm mb-1">OPERATIONAL NOTES</label>
-                        <textarea class="w-full bg-gray-800 border border-gray-700 rounded px-4 py-2 text-gray-300 h-24" placeholder="Enter mission notes...">PRIMARY OPERATOR FOR EASTERN SECTOR. SPECIALIZES IN WIFI PENETRATION AND SIGNAL ANALYSIS.</textarea>
-                    </div>
+                    {% endfor %}
                 </div>
+                {% endif %}
+                <form method="POST" action="{% url 'profile' %}">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-400 text-sm mb-1 font-mono">USERNAME</label>
+                            {{ form.username }}
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm mb-1 font-mono">EMAIL</label>
+                            {{ form.email }}
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm mb-1 font-mono">FIRST NAME</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm mb-1 font-mono">LAST NAME</label>
+                            {{ form.last_name }}
+                        </div>
+                        <div class="md:col-span-2">
+                            <button type="submit" class="cyber-btn px-4 py-2 rounded-md font-bold text-black">
+                                UPDATE PROFILE
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
+            
 
             <!-- Security Settings Card -->
             <div class="terminal rounded-lg p-6">
@@ -154,7 +166,7 @@
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-400">MISSIONS COMPLETED</span>
-                        <span class="font-bold text-green-400">127</span>
+                        <span class="font-bold text-green-400">{{ stats.missions }}</span>
                     </div>
                     <div class="w-full bg-gray-800 rounded-full h-2">
                         <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
@@ -197,49 +209,23 @@
                 </div>
                 
                 <div class="space-y-4">
+                    {% for activity in activity_logs %}
                     <div class="flex items-start">
-                        <div class="h-2 w-2 bg-green-400 rounded-full mt-2 mr-3"></div>
+                        <div class="h-2 w-2 
+                            {% if activity.type == 'scan' %}bg-blue-400
+                            {% elif activity.type == 'attack' %}bg-red-400
+                            {% else %}bg-yellow-400{% endif %} 
+                            rounded-full mt-2 mr-3 flex-shrink-0"></div>
                         <div>
-                            <p class="text-sm text-gray-300">Initiated deauth attack on TARGET-ALPHA</p>
-                            <p class="text-xs text-gray-500">2023-11-28 14:36:22 UTC</p>
+                            <p class="text-sm text-gray-300">{{ activity.message }}</p>
+                            <p class="text-xs text-gray-500 font-mono">{{ activity.timestamp }}</p>
                         </div>
                     </div>
+                    {% endfor %}
                     
-                    <div class="flex items-start">
-                        <div class="h-2 w-2 bg-blue-400 rounded-full mt-2 mr-3"></div>
-                        <div>
-                            <p class="text-sm text-gray-300">Completed network scan in sector 7-G</p>
-                            <p class="text-xs text-gray-500">2023-11-28 12:15:08 UTC</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-start">
-                        <div class="h-2 w-2 bg-yellow-400 rounded-full mt-2 mr-3"></div>
-                        <div>
-                            <p class="text-sm text-gray-300">Updated security credentials</p>
-                            <p class="text-xs text-gray-500">2023-11-27 09:42:51 UTC</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-start">
-                        <div class="h-2 w-2 bg-purple-400 rounded-full mt-2 mr-3"></div>
-                        <div>
-                            <p class="text-sm text-gray-300">Analyzed packet capture from TARGET-BRAVO</p>
-                            <p class="text-xs text-gray-500">2023-11-26 22:18:37 UTC</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-start">
-                        <div class="h-2 w-2 bg-red-400 rounded-full mt-2 mr-3"></div>
-                        <div>
-                            <p class="text-sm text-gray-300">System alert: Unauthorized access attempt blocked</p>
-                            <p class="text-xs text-gray-500">2023-11-25 16:29:14 UTC</p>
-                        </div>
-                    </div>
-                    
-                    <button class="w-full mt-4 px-4 py-2 rounded-md font-bold text-xs bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 hover:text-green-400 transition-colors">
+                    <a href="{% url 'view_logs' %}" class="w-full mt-4 px-4 py-2 rounded-md font-bold text-xs bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 hover:text-green-400 transition-colors block text-center">
                         VIEW FULL ACTIVITY LOG
-                    </button>
+                    </a>
                 </div>
             </div>
             

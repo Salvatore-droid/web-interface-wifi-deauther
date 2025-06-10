@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import subprocess
+import time
+
 
 
 def get_wireless_interface():
@@ -18,75 +20,67 @@ from django.contrib import messages
 import subprocess
 import os
 
-
 @login_required
 def scan_networks(request):
     """View for scanning nearby WiFi networks"""
-    interface = get_wireless_interface()
+    interface = get_wireless_interface() or 'wlan0'
     
     if request.method == 'POST':
-        password = request.POST.get('password')
-        timeout = int(request.POST.get('timeout', 30))
-        
-        if not interface:
-            messages.error(request, "No wireless interface found!")
-            return render(request, 'scan.html')
+        form = ScanForm(request.POST)
+        if not form.is_valid():
+            return render(request, 'scan.html', {'form': form, 'interface': interface})
             
         try:
-            # Put interface in monitor mode
-            cmd = ['sudo', '-S', 'airmon-ng', 'start', interface]
-            subprocess.run(
-                cmd,
-                input=f"{password}\n",
-                capture_output=True,
-                text=True,
-                encoding='utf-8'
-            )
+            # Validate timeout input
+            timeout = min(60, max(5, int(form.cleaned_data.get('timeout', 30))))
             
-            # Run airodump-ng scan
-            scan_file = f"/tmp/scan_{request.user.id}_{int(time.time())}"
-            cmd = [
-                'sudo', '-S', 'timeout', str(timeout),
-                'airodump-ng', f"{interface}mon", 
-                '-w', scan_file, '--output-format', 'csv'
-            ]
-            
-            process = subprocess.Popen(
-                cmd,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True
-            )
-            process.communicate(input=f"{password}\n")
-            
-            # Parse results
-            csv_file = f"{scan_file}-01.csv"
-            if os.path.exists(csv_file):
-                with open(csv_file, 'r') as f:
-                    networks = []
-                    for line in f.readlines()[1:]:
-                        if line.strip() == '':
-                            continue
-                        parts = [p.strip() for p in line.split(',')]
-                        networks.append({
-                            'bssid': parts[0],
-                            'essid': parts[13],
-                            'channel': parts[3],
-                            'signal': parts[8],
-                            'encryption': parts[5]
-                        })
-                os.remove(csv_file)
-                messages.success(request, f"Found {len(networks)} networks")
-                return render(request, 'scan.html', {'networks': networks})
-            else:
-                messages.error(request, "Scan failed - no results file generated")
+            # Generate secure temp file path
+            with tempfile.NamedTemporaryFile(prefix=f"scan_{request.user.id}_", suffix='.csv', delete=True) as tmp:
+                # Run scan commands
+                monitor_interface = f"{interface}mon"
                 
+                # Start monitor mode
+                subprocess.run(
+                    ['sudo', 'airmon-ng', 'start', interface],
+                    check=True,
+                    timeout=30
+                )
+                
+                try:
+                    # Run scan
+                    subprocess.run(
+                        ['sudo', 'timeout', str(timeout),
+                        'airodump-ng', monitor_interface,
+                        '-w', tmp.name.rstrip('.csv'),
+                        '--output-format', 'csv'],
+                        check=True,
+                        timeout=timeout + 5
+                    )
+                    
+                    # Process results
+                    networks = process_scan_results(tmp.name + '-01.csv')
+                    return render(request, 'scan.html', {
+                        'networks': networks,
+                        'interface': interface,
+                        'count': len(networks)
+                    })
+                    
+                finally:
+                    # Stop monitor mode
+                    subprocess.run(
+                        ['sudo', 'airmon-ng', 'stop', monitor_interface],
+                        timeout=10
+                    )
+                    
+        except subprocess.TimeoutExpired:
+            messages.error(request, "Scan timed out")
+        except subprocess.CalledProcessError as e:
+            messages.error(request, f"Scan failed: {e.stderr}")
         except Exception as e:
             messages.error(request, f"Error: {str(e)}")
+            logger.exception("Network scan failed")
     
     return render(request, 'scan.html', {'interface': interface})
-
 
 
 @login_required
@@ -156,7 +150,56 @@ def view_logs(request):
     
     return render(request, 'logs.html', {'logs': reversed(logs)})
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.conf import settings
+import os
+from datetime import datetime
+from .forms import ProfileUpdateForm
+
 @login_required
 def profile(request):
-    """User profile view"""
-    return render(request, 'profile.html')
+    # Get wireless interface for display
+    interface = get_wireless_interface()
+    
+    # Handle profile updates
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated!')
+            return redirect('profile')
+    else:
+        form = ProfileUpdateForm(instance=request.user)
+    
+    # Prepare context data
+    context = {
+        'current_time': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        'interface': interface,
+        'form': form,
+        'activity_logs': get_recent_activity(request.user),
+        'stats': get_user_stats(request.user),
+    }
+    
+    return render(request, 'profile.html', context)
+
+
+def get_recent_activity(user):
+    # In a real app, you'd query your Activity model
+    # This is a mock implementation
+    return [
+        {'type': 'scan', 'message': 'Initiated network scan', 'timestamp': '2023-11-28 14:36:22'},
+        {'type': 'attack', 'message': 'Launched deauth attack on TARGET-ALPHA', 'timestamp': '2023-11-28 12:15:08'},
+        {'type': 'system', 'message': 'Updated security credentials', 'timestamp': '2023-11-27 09:42:51'},
+    ]
+
+def get_user_stats(user):
+    # Mock stats - replace with real data from your models
+    return {
+        'missions': 87,
+        'success_rate': 94.2,
+        'targets': 642,
+        'uptime': 99.98,
+        'threat_level': 75,
+    }
