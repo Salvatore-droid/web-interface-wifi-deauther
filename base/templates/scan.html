@@ -23,21 +23,26 @@
         </div>
         {% endif %}
 
+        <!-- scan.html -->
         <form method="post">
             {% csrf_token %}
             
             <div class="mb-6">
                 <label class="block text-gray-400 mb-2">DETECTED INTERFACE</label>
-                <input type="text" value="{{ interface|default:'wlan0' }}" 
-                       class="w-full bg-gray-900 border border-gray-700 p-3 text-green-400 font-mono" readonly>
+                <input type="text" value="{{ interface }}" 
+                    class="w-full bg-gray-900 border border-gray-700 p-3 text-green-400 font-mono" readonly>
             </div>
             
             <div class="mb-6">
-                <label class="block text-gray-400 mb-2">SUDO PASSWORD</label>
-                <input type="password" name="password" 
-                       class="w-full bg-gray-900 border border-gray-700 p-3 text-green-400 font-mono focus:border-green-400 focus:outline-none" 
-                       required>
+                {{ form.password.label_tag }}
+                {{ form.password }}
                 <p class="text-gray-600 mt-1 text-sm">Required for monitor mode</p>
+            </div>
+            
+            <div class="mb-6">
+                {{ form.timeout.label_tag }}
+                {{ form.timeout }}
+                <p class="text-gray-600 mt-1 text-sm">Scan duration in seconds (5-120)</p>
             </div>
             
             <button type="submit" 

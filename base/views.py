@@ -2,7 +2,13 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import subprocess
 import time
-
+from .forms import ProfileUpdateForm, ScanForm
+import tempfile
+import os
+import logging
+from django.contrib import messages
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 
 def get_wireless_interface():
@@ -14,11 +20,12 @@ def get_wireless_interface():
     except Exception as e:
         print(f"Error detecting interface: {e}")
     return None
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-import subprocess
-import os
+
+
+
+
+# Set up logger
+logger = logging.getLogger(__name__)
 
 @login_required
 def scan_networks(request):
@@ -32,7 +39,7 @@ def scan_networks(request):
             
         try:
             # Validate timeout input
-            timeout = min(60, max(5, int(form.cleaned_data.get('timeout', 30))))
+            timeout = min(120, max(5, int(form.cleaned_data.get('timeout', 30))))
             
             # Generate secure temp file path
             with tempfile.NamedTemporaryFile(prefix=f"scan_{request.user.id}_", suffix='.csv', delete=True) as tmp:
@@ -58,13 +65,31 @@ def scan_networks(request):
                     )
                     
                     # Process results
-                    networks = process_scan_results(tmp.name + '-01.csv')
-                    return render(request, 'scan.html', {
-                        'networks': networks,
-                        'interface': interface,
-                        'count': len(networks)
-                    })
-                    
+                    csv_file = f"{tmp.name}-01.csv"
+                    if os.path.exists(csv_file):
+                        with open(csv_file, 'r') as f:
+                            networks = []
+                            for line in f.readlines()[1:]:
+                                if line.strip() == '':
+                                    continue
+                                parts = [p.strip() for p in line.split(',')]
+                                networks.append({
+                                    'bssid': parts[0],
+                                    'essid': parts[13],
+                                    'channel': parts[3],
+                                    'signal': parts[8],
+                                    'encryption': parts[5]
+                                })
+                        os.remove(csv_file)
+                        messages.success(request, f"Found {len(networks)} networks")
+                        return render(request, 'scan.html', {
+                            'networks': networks,
+                            'interface': interface,
+                            'count': len(networks)
+                        })
+                    else:
+                        messages.error(request, "Scan failed - no results file generated")
+                        
                 finally:
                     # Stop monitor mode
                     subprocess.run(
@@ -81,7 +106,6 @@ def scan_networks(request):
             logger.exception("Network scan failed")
     
     return render(request, 'scan.html', {'interface': interface})
-
 
 @login_required
 def home(request):
@@ -156,7 +180,6 @@ from django.contrib import messages
 from django.conf import settings
 import os
 from datetime import datetime
-from .forms import ProfileUpdateForm
 
 @login_required
 def profile(request):

@@ -1,8 +1,35 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 User = get_user_model()
+
+
+
+class ScanForm(forms.Form):
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full bg-gray-900 border border-gray-700 p-3 text-green-400 font-mono',
+            'placeholder': 'sudo password'
+        }),
+        required=True,
+        label="SUDO Password"
+    )
+    
+    timeout = forms.IntegerField(
+        widget=forms.NumberInput(attrs={
+            'class': 'w-full bg-gray-900 border border-gray-700 p-3 text-green-400 font-mono',
+            'value': '30'
+        }),
+        initial=30,
+        validators=[
+            MinValueValidator(5, message="Scan must run for at least 5 seconds"),
+            MaxValueValidator(120, message="Scan cannot run longer than 120 seconds")
+        ],
+        required=False,
+        label="Scan Duration (seconds)"
+    )
 
 class ProfileUpdateForm(UserChangeForm):
     class Meta:
